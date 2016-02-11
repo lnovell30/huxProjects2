@@ -1,0 +1,30 @@
+
+
+.container {
+  width:800px;
+  margin-left:auto;
+  margin-right:auto;
+  background: #fffffe;
+  padding:2px 10px;
+  border:#d9d9d9 1px solid;
+  text-align: center;
+  font-family: arial,sans-serif,verdana;
+}
+ul.unadornedlist li {
+  list-style: none;
+}
+
+ul.unadornedlist li a:first-child {
+  color:#333;
+}
+div.header {
+  border-bottom: #555 3px solid;
+  padding-bottom: 10px;
+  margin-bottom: 5px;
+}
+ul.unadornedlist li label {
+    margin-right: 10px;
+    min-width: 50px;
+    display: inline-block;
+    text-align: right;
+}
