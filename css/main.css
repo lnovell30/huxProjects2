@@ -13,6 +13,9 @@
 ul.unadornedlist li {
   list-style: none;
 }
+.unavailable {
+  color:#fff;
+}
 
 ul.unadornedlist li a:first-child {
   color:#333;
@@ -27,4 +30,17 @@ ul.unadornedlist li label {
     min-width: 50px;
     display: inline-block;
     text-align: right;
+}
+
+.not-active {
+   pointer-events: none;
+   cursor: default;
+}
+.project-container-section {
+  background: #444;
+  color:#fff;
+}
+.project-container-section li h2 {
+  text-align: left;
+  margin-left: 200px;
 }
