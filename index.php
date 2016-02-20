@@ -6,6 +6,8 @@
    </head>
 <body>
   <?php
+  error_reporting(-1);
+   ini_set('display_errors', 'On');
   // Create a bootstrap file to make sure that promote encapsulation
    include './includes/bootstrap.php';
   
