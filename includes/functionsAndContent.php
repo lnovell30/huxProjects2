@@ -1,6 +1,6 @@
 <?php
     /**
-     * getPostVariables - matches the fetching of Post Variables easy and abstract
+     * getPostVariables - separates the fetching of $_POST Variables from other parts of program.
      * returns : $postVariables - array of post variables from input form
      * notes : uses defaults when no post variables are defined
      **/
@@ -31,7 +31,7 @@
     }
     
     /**
-     * validatePostVariables - matches the validateion of Post Variables easy and abstract
+     * validatePostVariables - achieves the validation of Post Variables,encapsulating the logic
      * @param $postVariables - variables passed in by user or defaulted if user left empty
      * returns : array indicating which user response is invalid from input form
      *  
@@ -48,45 +48,62 @@
     
         
     }
+    
+    /**
+     * getPasswordForm - Serves as the main entry point to file, calling functions that get variables, validates variables and pulls content based on rules
+     * @param $postVariables - variables passed in by user or defaulted if user left empty
+     * returns : array indicating which user response is invalid from input form
+     *  
+     **/
     function getPasswordForm() {
         
         
         $postVariables = getPostVariables();
         $validatedPostVariables = validatePostVariables($postVariables);
         
-         // Test Variables
-        // var_dump($postVariables);
-        // var_dump($validatedPostVariables);
-      
         
         $content = '
          
-           <form action="" method="POST">
-             <div class="outerContent">
-             <div class="options"><legend>Options</legend<fieldlist>' . getUserGeneratedOptions($postVariables,$validatedPostVariables)
-                 
-              
-             . '</fieldlist><br><hr></div>' .
-             '<div class="mainContent"> <h2>Passwords</h2><h3><input type="submit"></h3> '
+             <form action="" method="POST">
+                <div class="outerContent">
+                    <div class="headerArea">
+                      <h2>Novell\'s Slick Password Generator </h2>
+                    </div>
+                    <div class="options"><legend>Generation Options</legend>
+                        <fieldset>'
+                    
+                    . getUserGeneratedOptions($postVariables,$validatedPostVariables) .
+                     
+                  
+                        '</fieldset>
+                        <br>
+                        <hr>
+                  </div>' .
+                '<div class="mainContent">
+                       <h2 class="sectiontitle">Generated Passwords</h2>
+                       <h3><input type="submit"></h3> '
              
-             . getBasicFields($postVariables,$validatedPostVariables) . 
+                    . getGeneratedPasswordFields($postVariables,$validatedPostVariables) . 
              
-             
-             '</div>
+           
               
            
-            </div>
+                '</div>
            </form>
-        
-        
-        
-        
-        
+    
         ';
         
         return $content;
         
     }
+      /**
+     * presentValidationMessage - returns validation messages based on validation variables
+     * @param $postVariables - variables passed in by user or defaulted if user left empty
+     * @param $validationVariables - validate variables based on user variables
+     * @param $index - common index between $postVariables and $validationVariables, used to make rules easier to interpret
+     * @return : array indicating which user response is invalid from input form
+     *  
+     **/
     function presentValidationMessage($postVariables,$validationVariables,$index) {
         $message  = "";
         
@@ -108,12 +125,97 @@
          
         return $message;
     }
+    
+     /**
+     * isOptionSelected - helper function to determine if an html option needs to be selected based on input variables
+     * @param $variable - variable to compare
+     * @param $comparison - the object/value used to compare against  $variable
+     * @return :html - option text indicating if option is selected
+     *  
+     **/
     function isOptionSelected($variable, $comparison) {
         if ($variable == $comparison) {
             return " selected ";
         }
         return "";
     }
+    
+    
+    
+        /**
+     * getRandomSymbol - helper function that fetches random symbol from array of possible symbols
+     * @param $numberOfRandomSymbols - the number of random symbols to return
+     * @return - one or more concatenated symbols
+     ***/
+    function getRandomSymbol($numberOfRandomSymbols=1) {
+        
+        $randomSymbols = array("@","#","$","%","^","&","*","(",")","!","+","-","<",">","~",);
+       
+        if (intval($numberOfRandomSymbols) == 1 ) {
+            $output = $randomSymbols[array_rand($randomSymbols)];
+            print "Symbol : " . $output;
+            return $output;
+        }
+        // Otherwise continue to evaluate
+        $keys = array_rand($randomSymbols,$numberOfRandomSymbols);
+       
+        $output = "";
+        
+    
+        
+        foreach ($keys as $key => $index ) {
+            $output .= $randomSymbols[$index];
+        }
+        
+        return $output;
+    }
+    
+    
+      /**
+     * getRandomNumber - helper function that fetches random number 0..9
+     * @param $numberOfRandomNumbers - the number of random numbers to return
+     * @return - one or more concatenated numbers
+     ***/
+    function getRandomNumber($numberOfRandomNumbers=1) {
+     $output = "";
+     
+     for ($count = 0 ; $count < $numberOfRandomNumbers; $count++)
+        $output .= rand(0,9);
+     
+      return $output;
+    
+    }
+    
+     /**
+     * getRandomWord - helper function that from the web, random words generated by the following website : 'http://randomword.setgetgo.com/get.php'
+     * @param $numberOfRandomNumbers - the number of random numbers to return
+     * @return - one or more concatenated numbers
+     ***/
+    function getRandomWord() {
+        $content ="uninitialized";
+        // Get cURL resource
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => 'http://randomword.setgetgo.com/get.php',
+            CURLOPT_USERAGENT => 'Password Generation Agent'
+        ));
+        // Populate Content Variable
+        $content = curl_exec($curl);
+        // Clear references
+        curl_close($curl);
+        return $content;
+    }
+    
+     /**
+     * getUserGeneratedOptions - helper function to determine if an html option needs to be selected based on input variables
+     * @param $generationVariables - variables housing user-submitted input fields
+     * @param $validatedVariables - validation variables reflecting accuracy of user submitted input fields
+     * @return :html - Options chosen by the user, complete with validation.
+     *  
+     **/
+    
     function getUserGeneratedOptions($generationVariables,$validatedVariables) {
         $content = "";
         
@@ -142,66 +244,22 @@
         
         return $content;
     }
-    /**
-     * getRandomSymbol - fetches random symbol from array of possible symbols
-     * @return symbol
-     ***/
-    function getRandomSymbol($numberOfRandomSymbols=1) {
-        
-        $randomSymbols = array("@","#","$","%","^","&","*","(",")","!","+","-","<",">","~",);
-       
-        if (intval($numberOfRandomSymbols) == 1 ) {
-            $output = $randomSymbols[array_rand($randomSymbols)];
-            print "Symbol : " . $output;
-            return $output;
-        }
-        // Otherwise continue to evaluate
-        $keys = array_rand($randomSymbols,$numberOfRandomSymbols);
-       
-        $output = "";
-        
-    
-        
-        foreach ($keys as $key => $index ) {
-            $output .= $randomSymbols[$index];
-        }
-        
-        return $output;
-    }
-    
-    function getRandomNumber($numberOfRandomNumbers=1) {
-     $output = "";
-     
-     for ($count = 0 ; $count < $numberOfRandomNumbers; $count++)
-        $output .= rand(0,9);
-     
-      return $output;
-    
-    }
-    function getRandomWord() {
-        $content ="uninitialized";
-        // Get cURL resource
-        $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'http://randomword.setgetgo.com/get.php',
-            CURLOPT_USERAGENT => 'Password Generation Agent'
-        ));
-        // Populate Content Variable
-        $content = curl_exec($curl);
-        // Clear references
-        curl_close($curl);
-        return $content;
-    }
-    function getBasicFields($generationVariables,$validatedFields) {
+     /**
+     * getGeneratedPasswordFields - primary function that generates the passwords used as the main objective of program
+     * @param $generationVariables - variables housing user-submitted input fields
+     * @param $validatedFields - validation variables reflecting accuracy of user submitted input fields
+     * @return :html - Generated Passwords, based on all the parameters from user input 
+     *  
+     **/ 
+    function getGeneratedPasswordFields($generationVariables,$validatedFields) {
         
-        $content = "";
+        $content = "<div class=\"passwordMasterContainer\"";
         
         
         
        
-        $maxIterations = 20;
+        $maxIterations = 10;
         
        
         
@@ -209,7 +267,7 @@
             
             
              
-            $content .= "<div class=\"passwordInstance\"><label class=\"questionLabel label$iterations\">Password : $iterations</label>";
+            $content .= "<div class=\"passwordInstance\"><label class=\"questionLabel label$iterations\">Password # $iterations</label>";
                   
             
             $generatedPassword = "";
@@ -258,7 +316,7 @@
             
         };
         
-        
+        $content .= "</div>";
         return $content;
         
     }
