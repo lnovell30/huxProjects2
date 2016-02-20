@@ -44,3 +44,10 @@ ul.unadornedlist li label {
   text-align: left;
   margin-left: 200px;
 }
+
+div.maincontent {
+  background: #fffffe;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}

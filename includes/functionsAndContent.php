@@ -5,7 +5,7 @@
         
            <form action="" method="POST">
              <div class="outerContent">
-             <div class="maincontent"> '
+             <div class="mainContent"> '
              
              . getBasicFields() . 
              
