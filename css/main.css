@@ -70,3 +70,8 @@ div.options {
   margin-left: auto;
   margin-right: auto;
 }
+span.errorMessage {
+  display: block;
+  color: #ff0000;
+  font-weight: 600;
+}

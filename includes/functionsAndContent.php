@@ -82,7 +82,7 @@
         
          switch ($index) {
             case 'wordCount' : if ($validationVariables[$index] === false) {
-                                   $message = "<span class=\"errorMessage\">$postVariables[$index] is an invalid number, please enter a valid integer between 1 and 5</span>";     
+                                   $message = "<span id=\"errorMessage$index\" class=\"errorMessage\">$postVariables[$index] is an invalid number, please enter a valid integer between 1 and 5</span>";     
                                }
             break;
             
@@ -90,15 +90,16 @@
          
         return $message;
     }
+    
     function getUserGeneratedOptions($generationVariables,$validatedVariables) {
         $content = "";
         
         
         $content .= '
              <ul class="unadornedlist">
-             <li class="separated" ><label> How many Words do you want in your password?</label><input name="pWordCount" value="' . ($generationVariables['wordCount']) . '" size="2" type="text">' . presentValidationMessage($generationVariables,$validatedVariables,'wordCount') . '</li>
-             <li class="separated" ><label> Include number in password ?</label><input name="pUseNumbers" type="checkbox" ' . ($generationVariables['useNumbers'] == 'on' ? "checked=\"checked\"" : "") . '></li>
-             <li class="separated" ><label> Include special symbol (for example, @).?</label><input name="pUseSymbols" type="checkbox" ' . ($generationVariables['useSymbols'] == 'on' ? "checked=\"checked\"" : "") . '></li>
+             <li class="separated" ><label> How many Words do you want in your password?</label><input name="pWordCount"  id="pWordCount" value="' . ($generationVariables['wordCount']) . '" size="2" type="text">' . presentValidationMessage($generationVariables,$validatedVariables,'wordCount') . '</li>
+             <li class="separated" ><label> Include number in password ?</label><input name="pUseNumbers" id="pUserNumbers" type="checkbox" ' . ($generationVariables['useNumbers'] == 'on' ? "checked=\"checked\"" : "") . '></li>
+             <li class="separated" ><label> Include special symbol (for example, @).?</label><input name="pUseSymbols" id="pUseSymbols" type="checkbox" ' . ($generationVariables['useSymbols'] == 'on' ? "checked=\"checked\"" : "") . '></li>
              </ul>
               
              
@@ -108,7 +109,20 @@
     }
     
     function getRandomWord() {
-        return "Test";
+        $content ="uninitialized";
+        // Get cURL resource
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => 'http://randomword.setgetgo.com/get.php',
+            CURLOPT_USERAGENT => 'Password Generation Agent'
+        ));
+        // Populate Content Variable
+        $content = curl_exec($curl);
+        // Clear references
+        curl_close($curl);
+        return $content;
     }
     function getBasicFields($generationVariables) {
         
